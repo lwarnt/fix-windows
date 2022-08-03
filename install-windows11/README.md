@@ -23,4 +23,6 @@ by placing the Windows image inside the Windows 10 installer.
 ./make-iso.sh /path/to/Windows-10.iso /path/to/Windows-11.iso
 ```
 
+The result will be `/tmp/Windows11-out.iso`.
+
 > **Note** Does not guard against switching inputs. So make sure they are correct.
