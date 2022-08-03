@@ -59,7 +59,7 @@ rm -rf "$W10_MOUNT"
 rm -rf "$W11_MOUNT"
 rm -rf "$W10_WORKDIR"
 
-printf "${YELLOW}This is the result:\n${NOCOLOR}"
+printf "${YELLOW}${INFO}Result:\n${NOCOLOR}"
 ls -d -lh "/tmp/"*.iso
 
 exit 0
