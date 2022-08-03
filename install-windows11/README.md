@@ -20,7 +20,7 @@ by placing the Windows image inside the Windows 10 installer.
 ## Usage
 
 ```bash
-./make-iso.sh <Windows-10.iso> <Windows-11.iso>
+./make-iso.sh /path/to/Windows-10.iso /path/to/Windows-11.iso
 ```
 
 > **Note** Does not guard against switching inputs. So make sure they are correct.
