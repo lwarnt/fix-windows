@@ -32,6 +32,7 @@ printf "${YELLOW}Copy Windows image file to working directory.\n${NOCOLOR}"
 cp "$W11_MOUNT"/sources/install.wim "$W10_WORKDIR"/sources/
 
 printf "${YELLOW}Package the new disk image.\n${NOCOLOR}"
+# Source: https://unix.stackexchange.com/questions/531012/how-to-modify-an-installation-iso-and-keep-it-bootable
 # -b needs to be relative -.-
 cd "$W10_WORKDIR"
 genisoimage --allow-limited-size \
