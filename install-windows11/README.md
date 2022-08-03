@@ -10,8 +10,8 @@ by placing the Windows image inside the Windows 10 installer.
 
 **Requirements:**
 
-* Windows 10 .iso
-* Windows 11 .iso
+* Windows 10 .iso file
+* Windows 11 .iso file
 * `genisoimage` or equivalent
 * Disk space (~ 12GB)
 
@@ -25,4 +25,11 @@ by placing the Windows image inside the Windows 10 installer.
 
 The result will be `/tmp/Windows11-out.iso`.
 
-> **Note** Does not guard against switching inputs. So make sure they are correct.
+> **Note** Does not guard against switching inputs.
+
+## Tests
+
+Tested using these combinations:
+
+* [x] 10 Enterprise Eval & 11 Enterprise Eval
+* [x] 10 Business Edition & 11 Multi-Edition ISO
