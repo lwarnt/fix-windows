@@ -21,7 +21,7 @@ See individual READMEs.
 If you have Feedback, please open an Issue. There is no guarantee that any of this works, so I can not offer any meaningful support.
 Others might still be able to though.
 
-If you'd like to contribute, please make a PR.
+If you'd like to contribute, please do the PR thing.
 
 ## Acknowledgements
 

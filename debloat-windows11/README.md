@@ -14,7 +14,7 @@ Then
 
 ```Powershell
 Set-ExecutionPolicy Unrestricted -Scope Process -Force -Confirm:$false
-iwr https://raw.githubusercontent.com/lwarnt/fix-windows/debloat-windows11/main/debloat.ps1 | iex
+iwr https://raw.githubusercontent.com/lwarnt/fix-windows/main/debloat-windows11/debloat.ps1 | iex
 ```
 
 ## Usage

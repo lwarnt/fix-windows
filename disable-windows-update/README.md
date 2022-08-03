@@ -14,6 +14,6 @@ Then
 
 ```Powershell
 Set-ExecutionPolicy Unrestricted -Scope Process -Force -Confirm:$false
-iwr https://raw.githubusercontent.com/lwarnt/fix-windows/deactivate-windows-update/main/main.ps1 | iex
+iwr https://raw.githubusercontent.com/lwarnt/fix-windows/main/disable-windows-update/main.ps1 | iex
 ```
 
