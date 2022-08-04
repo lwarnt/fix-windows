@@ -56,7 +56,7 @@ if (! $silent){
 Write-Host "Creating Restore Point." -ForegroundColor Yellow
 Try {
     Enable-ComputerRestore -Drive $env:SystemDrive -logErrorAction Stop
-    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -logErrorAction Stop
+    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
 }
 Catch {
     if (! $force) {
