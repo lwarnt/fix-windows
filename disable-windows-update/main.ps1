@@ -81,6 +81,9 @@ function disableWindowsUpdate {
     # disable access
     New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Value 1 -PropertyType DWORD -Force | Out-Null
     # disable auto update
+    if(!(Test-Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")){
+	    New-Item -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+    }
     Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -Value 1
 }
 function disableMedic {
@@ -92,7 +95,7 @@ function disableMedic {
     takeown /F C:\Windows\System32\Tasks\Microsoft\Windows\WaaSMedic /A /R
     icacls C:\Windows\System32\Tasks\Microsoft\Windows\WaaSMedic /grant Administrators:F /T
 
-    Get-ScheduledTask -TaskPath "\Microsoft\Windows\WaaSMedic\" | Disable-ScheduledTask
+    Get-ScheduledTask -TaskPath "\Microsoft\Windows\WaaSMedic\" | Disable-ScheduledTask -ErrorAction SilentlyContinue | Out-Null
 
     # delete the trigger for medic service
     $service = New-Object -ComObject Schedule.Service
@@ -103,7 +106,7 @@ function disableMedic {
     $task = $folder.GetTask("PerformRemediation")
     $task.Definition.Triggers.Remove(1)
 
-    $folder.RegisterTaskDefinition($task.Name, $task.Definition, 4, $null, $null, $null)
+    $folder.RegisterTaskDefinition($task.Name, $task.Definition, 4, $null, $null, $null) | Out-Null
 }
 function disableOrchestrator {        
     # Take ownership and modifies discretionary access control lists 
@@ -111,7 +114,7 @@ function disableOrchestrator {
     takeown /F C:\Windows\System32\Tasks\Microsoft\Windows\UpdateOrchestrator /A /R
     icacls C:\Windows\System32\Tasks\Microsoft\Windows\UpdateOrchestrator /grant Administrators:F /T
 
-    Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" | Disable-ScheduledTask
+    Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" | Disable-ScheduledTask -ErrorAction SilentlyContinue
 }
 function scheduleDisableWindowsUpdate {
     # scheduled task to disable Windows Update in case it somehow re-activates itself
@@ -121,7 +124,7 @@ function scheduleDisableWindowsUpdate {
     $arg = "Stop-Service -Name wuauserv;Set-Service -Name wuauserv -StartupType Disabled"
     $principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $arg
-    Register-ScheduledTask DisableWindowsUpdate -Principal $principal -Action $action -Trigger $trigger
+    Register-ScheduledTask DisableWindowsUpdate -Principal $principal -Action $action -Trigger $trigger -ErrorAction SilentlyContinue | Out-Null
     # scheduled task to stop Medic Service in case it somehow re-activates itself
     $repeat1 = (New-TimeSpan -Hours 8)
     $duration1 = (New-TimeSpan -Days 365)
@@ -129,7 +132,7 @@ function scheduleDisableWindowsUpdate {
     $arg1 = "Stop-Service -Name WaaSMedicSvc;Set-Service -Name WaaSMedicSvc -StartupType Disabled"
     $principal1 = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     $action1 = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $arg1
-    Register-ScheduledTask DisableWindowsUpdateMedic -Principal $principal1 -Action $action1 -Trigger $trigger1
+    Register-ScheduledTask DisableWindowsUpdateMedic -Principal $principal1 -Action $action1 -Trigger $trigger1 -ErrorAction SilentlyContinue | Out-Null
 }
 
 $services = @("wuauserv", "WaaSMedicSvc", "UsoSvc") 
