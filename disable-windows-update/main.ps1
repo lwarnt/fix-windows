@@ -55,8 +55,8 @@ if (! $silent){
 
 Write-Host "Creating Restore Point." -ForegroundColor Yellow
 Try {
-    Enable-ComputerRestore -Drive $env:SystemDrive -logErrorAction Stop
-    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -logErrorAction Stop
+    Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction Stop
+    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
 }
 Catch {
     if (! $force) {
@@ -143,8 +143,8 @@ $services | ForEach-Object{
 Stop-Process -Name "MoUsoCoreWorker" -Force -PassThru -ErrorAction SilentlyContinue | Out-Null
 Stop-Process -Name "TiWorker" -Force -PassThru -ErrorAction SilentlyContinue | Out-Null
 # Set various properties
-disableWindowsUpdateServices
-disableMedicService
+disableWindowsUpdate
+disableMedic
 disableOrchestrator
 # schedule additional tasks
 scheduleDisableWindowsUpdate
