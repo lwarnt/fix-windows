@@ -140,8 +140,8 @@ $services | ForEach-Object{
 Stop-Process -Name "MoUsoCoreWorker" -Force -PassThru -ErrorAction SilentlyContinue | Out-Null
 Stop-Process -Name "TiWorker" -Force -PassThru -ErrorAction SilentlyContinue | Out-Null
 # Set various properties
-disableWindowsUpdateServices
-disableMedicService
+disableWindowsUpdate
+disableMedic
 disableOrchestrator
 # schedule additional tasks
 scheduleDisableWindowsUpdate
