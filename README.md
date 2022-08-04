@@ -1,16 +1,8 @@
 # Fix Windows
 
-[fix](https://www.merriam-webster.com/dictionary/fix) *verb*
+# TESTING BRANCH
 
-A collection of scripts that *might* be useful for a Windows installation. 
-
-> **Warning**
->
-> Does not come with sufficient safeguards.
->
-> DO NOT USE if you are not sure about what any of it does.
->
-> Based on my personal preference and may change and/or break at any time.
+> **Warning** Stuff that is here is either currently testing or not working.
 
 ## Usage
 
