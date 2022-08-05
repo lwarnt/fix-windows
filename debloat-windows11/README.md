@@ -1,1 +1,33 @@
-# Moved to testing branch
+# Debloat Windows 11
+
+# TESTING BRANCH
+
+> **Warning** Stuff that is here is either currently testing or not working.
+
+> **Note** 
+> 
+> It will also change some settings that have little to do with bloat(ware). 
+
+## Quickstart
+
+```Powershell
+start powershell -verb runas
+```
+
+Then
+
+```Powershell
+Set-ExecutionPolicy Unrestricted -Scope Process -Force -Confirm:$false
+iwr https://raw.githubusercontent.com/lwarnt/fix-windows/testing/debloat-windows11/debloat.ps1 | iex
+```
+
+## Usage
+
+```Powershell
+# silent, do not prompt attempt restore point creation
+.\debloat.ps1 $true
+# prompt, skip restore point 
+.\debloat.ps1 $false $true
+# silent, create restore point but ignore restore point creation failure
+.\debloat.ps1 $true $false $true
+```
