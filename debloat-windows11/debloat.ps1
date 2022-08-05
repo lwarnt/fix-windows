@@ -12,11 +12,16 @@
 .Parameter silent
     Do not ask for confirmation before running the script.
 
+.Parameter skip_restore_point
+    Do not attempt to create Restore Point.
+
 .Parameter force
-    Ignore Restore Point creation failure.
+    Ignore Restore Point creation failure. 
+    Only applies if skip_restore_point is $false.
 #>
 param(
     [Bool] $silent = $false,
+    [Bool] $skip_restore_point = $false,
     [Bool] $force = $false
 )
 
@@ -54,21 +59,24 @@ if (! $silent){
     Write-Host "$disclaimer" -ForegroundColor Yellow
 }
 
-Write-Host "Creating Restore Point."  -ForegroundColor Yellow
-Try {
-    Enable-ComputerRestore -Drive $env:SystemDrive -logErrorAction Stop
-    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -logErrorAction Stop
-}
-Catch {
-    if (! $force) {
-        Write-Host "Failed to create Restore Point, got: $_" -ForegroundColor Red
-        Pause
-        Exit
-    } else {
-        Write-Host "Failed to create Restore Point, proceed anyway." -ForegroundColor Yellow
+if (! $skip_restore_point) {
+    Write-Host "Creating Restore Point."  -ForegroundColor Yellow
+    Try {
+        Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction Stop
+        Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
     }
+    Catch {
+        if (! $force) {
+            Write-Host "Failed to create Restore Point, got: $_" -ForegroundColor Red
+            Pause
+            Exit
+        } else {
+            Write-Host "Failed to create Restore Point, proceed anyway." -ForegroundColor Yellow
+        }
+    }
+} else {
+    Write-Host "Skipped Restore Point creation." -ForegroundColor Yellow
 }
-
 $ErrorActionPreference = 'silentlycontinue'
 
 # https://github.com/teeotsa/windows-11-debloat/blob/new/src/main.ps1
@@ -357,6 +365,11 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
 
+Write-Host "Disable Toggle Keys and Sticky Keys." -ForegroundColor Yellow
+Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name "Flags" -Value "506"
+Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\Keyboard Response" -Name "Flags" -Value "122"
+Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\ToggleKeys" -Name "Flags" -Value "58"
+
 # https://github.com/teeotsa/windows-11-debloat/blob/new/src/main.ps1
 # https://github.com/kdpuvvadi/debloat-windows11/blob/main/debloat.ps1
 
@@ -373,7 +386,7 @@ If (!(Test-Path $onedrive)) {
 }
 Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
 Start-Sleep -Seconds 2
-Restart-Process -Process "explorer" -Restart -RestartDelay 5
+Stop-Process -Process $(Get-Process explorer) -Restart -RestartDelay 5
 Start-Sleep -Seconds 2
 If (!(Test-Path "HKCR:")) {
     New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
@@ -452,7 +465,7 @@ foreach($Bloat in $BloatwareList){
         Write-Host "Remove $Bloat" -ForegroundColor Yellow
         Try {
             Get-AppxPackage -Name $Bloat | Remove-AppxPackage -ErrorAction Stop | Out-Null
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online -ErrorAction Stop
+            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online -ErrorAction Stop | Out-Null
         }
         Catch { logError("Remove $Bloat, exception : $($_)") }
     }  
@@ -546,9 +559,8 @@ Set-ItemProperty $LocationConfig Status -Value 0
 Write-Host "Remove CloudStore." -ForegroundColor Yellow
 $CloudStore = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CloudStore'
 If (Test-Path $CloudStore) {
-    Stop-Process Explorer.exe -Force | Out-Null
+    Stop-Process $(Get-Process explorer) -Force | Out-Null
     Remove-Item $CloudStore -Recurse -Force
-    Start-Process Explorer.exe -Wait | Out-Null
 }
 
 Write-Host "Set Start Menu left." -ForegroundColor Yellow
@@ -601,6 +613,6 @@ If (Test-Path $Objects64) {
     Remove-Item $Objects64 -Recurse | Out-Null
 }
 
-Write-Host "Restart explorer once more." -ForegroundColor Yellow
-Stop-Process Explorer.exe -Force | Out-Null
-Start-Process Explorer.exe -Wait | Out-Null
+Write-Host "Restart explorer a final time." -ForegroundColor Yellow
+Stop-Process $(Get-Process explorer) -Force | Out-Null
+Start-Process explorer.exe -Wait | Out-Null

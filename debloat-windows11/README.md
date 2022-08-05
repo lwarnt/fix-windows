@@ -24,10 +24,10 @@ iwr https://raw.githubusercontent.com/lwarnt/fix-windows/testing/debloat-windows
 ## Usage
 
 ```Powershell
-# silent, do not prompt
+# silent, do not prompt attempt restore point creation
 .\debloat.ps1 $true
-# force, ignore restore point creation failure
+# prompt, skip restore point 
 .\debloat.ps1 $false $true
-# both
-.\debloat.ps1 $true $true
+# silent, create restore point but ignore restore point creation failure
+.\debloat.ps1 $true $false $true
 ```
