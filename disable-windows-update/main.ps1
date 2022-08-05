@@ -8,14 +8,16 @@
 .NOTES 
     Needs to run as administrator.
 
-.Parameter silent
-    Do not ask for confirmation before running the script.
+.Parameter skip_restore_point
+    Do not attempt to create Restore Point.
 
 .Parameter force
-    Ignore Restore Point creation failure.
+    Ignore Restore Point creation failure. 
+    Only applies if skip_restore_point is $false.
 #>
 param(
     [Bool] $silent = $false,
+    [Bool] $skip_restore_point = $false,
     [Bool] $force = $false
 )
 
@@ -53,19 +55,23 @@ if (! $silent){
     Write-Host "$disclaimer" -ForegroundColor Yellow
 }
 
-Write-Host "Creating Restore Point." -ForegroundColor Yellow
-Try {
-    Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction Stop
-    Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-}
-Catch {
-    if (! $force) {
-        Write-Host "Failed to create Restore Point, got: $_" -ForegroundColor Red
-        Pause
-        Exit
-    } else {
-        Write-Host "Failed to create Restore Point, proceed anyway."-ForegroundColor Yellow
+if (! $skip_restore_point) {
+    Write-Host "Creating Restore Point."  -ForegroundColor Yellow
+    Try {
+        Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction Stop
+        Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
     }
+    Catch {
+        if (! $force) {
+            Write-Host "Failed to create Restore Point, got: $_" -ForegroundColor Red
+            Pause
+            Exit
+        } else {
+            Write-Host "Failed to create Restore Point, proceed anyway." -ForegroundColor Yellow
+        }
+    }
+} else {
+    Write-Host "Skipped Restore Point creation." -ForegroundColor Yellow
 }
 function disableWindowsUpdate {
     Disable-ScheduledTask -TaskName "\Microsoft\Windows\WindowsUpdate\Scheduled Start" | Out-Null
