@@ -20,10 +20,10 @@ iwr https://raw.githubusercontent.com/lwarnt/fix-windows/main/disable-windows-up
 ## Usage
 
 ```Powershell
-# silent, do not prompt attempt restore point creation
+# unattended run (do not prompt), attempt restore point creation
 .\main.ps1 $true
 # prompt, skip restore point 
 .\main.ps1 $false $true
-# silent, create restore point but ignore restore point creation failure
+# unattended run, create restore point but ignore restore point creation failure
 .\main.ps1 $true $false $true
 ```
