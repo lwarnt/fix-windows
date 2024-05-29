@@ -8,76 +8,11 @@
  
 .NOTES 
     Needs to run as administrator.
-
-.Parameter silent
-    Do not ask for confirmation before running the script.
-
-.Parameter skip_restore_point
-    Do not attempt to create Restore Point.
-
-.Parameter force
-    Ignore Restore Point creation failure. 
-    Only applies if skip_restore_point is $false.
 #>
-param(
-    [Bool] $silent = $false,
-    [Bool] $skip_restore_point = $false,
-    [Bool] $force = $false
-)
 
-If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
-    Write-Host "Run as Administrator" -ForegroundColor Red
-    Pause
-    Exit
-}
+. {Invoke-WebRequest https://raw.githubusercontent.com/lwarnt/fix-windows/main/disclaimer.ps1 } | Invoke-Expression
 
-# Disclaimer
-if (! $silent){
-    $disclaimer = "    THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, 
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES 
-    OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-    
-    THIS SCRIPT DOES NOT COME WITH SUFFICIENT SAFEGUARDS.
-
-    DO NOT PROCEED UNLESS YOU KNOW WHAT YOU ARE DOING.
-    "
-    Write-Host "`n$disclaimer`n`n" -ForegroundColor Yellow
-    $confirmation = Read-Host "I accept these conditions and the risk. Proceed? [YES/NO]"
-    while($confirmation -ne "YES"){
-        if ($confirmation -eq 'NO') {
-            Write-Host "Aborted." -ForegroundColor Red
-            Pause
-            Exit
-        }
-        $confirmation = Read-Host "I accept these conditions and the risk. Proceed? [YES/NO]"
-    }
-} else {
-    Write-Host "Silent run. Skip confirmation." -ForegroundColor Yellow
-    Write-Host "$disclaimer" -ForegroundColor Yellow
-}
-
-if (! $skip_restore_point) {
-    Write-Host "Creating Restore Point."  -ForegroundColor Yellow
-    Try {
-        Enable-ComputerRestore -Drive $env:SystemDrive -ErrorAction Stop
-        Checkpoint-Computer -Description "BeforeDebloat" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-    }
-    Catch {
-        if (! $force) {
-            Write-Host "Failed to create Restore Point, got: $_" -ForegroundColor Red
-            Pause
-            Exit
-        } else {
-            Write-Host "Failed to create Restore Point, proceed anyway." -ForegroundColor Yellow
-        }
-    }
-} else {
-    Write-Host "Skipped Restore Point creation." -ForegroundColor Yellow
-}
-$ErrorActionPreference = 'silentlycontinue'
+$ErrorActionPreference = 'SilentlyContinue'
 
 # https://github.com/teeotsa/windows-11-debloat/blob/new/src/main.ps1
 

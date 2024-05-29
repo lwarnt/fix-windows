@@ -6,11 +6,9 @@ A collection of scripts that *might* be useful for a Windows installation.
 
 > **Warning**
 >
-> Does not come with sufficient safeguards.
+> Does not come with any safeguards.
 >
 > DO NOT USE if you are not sure about what any of it does.
->
-> Based on my personal preference and may change and/or break at any time.
 
 ## Usage
 
