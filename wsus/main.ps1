@@ -8,9 +8,10 @@
 .NOTES 
     Needs to run as administrator. 'deregister' will remove WSUS, but keep Windows Update disabled.
 #>
+
+. {Invoke-WebRequest https://raw.githubusercontent.com/lwarnt/fix-windows/main/disclaimer.ps1 } | Invoke-Expression
+
 New-Module -Name RegisterWSUS -Scriptblock {
-    
-    . {Invoke-WebRequest https://raw.githubusercontent.com/lwarnt/fix-windows/main/disclaimer.ps1 } | Invoke-Expression
 
     function register {
         [CmdletBinding()]
@@ -48,9 +49,6 @@ New-Module -Name RegisterWSUS -Scriptblock {
 } | Out-Null
 
 New-Module -Name DeregisterWSUS -Scriptblock {
-    
-    . {Invoke-WebRequest https://raw.githubusercontent.com/lwarnt/fix-windows/main/disclaimer.ps1 } | Invoke-Expression
-
     function deregister {
         [CmdletBinding()]param()
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "DisableWindowsUpdateAccess" -Type dword -Value 0x00000001
